@@ -106,8 +106,6 @@ private:
     /// The output stream where log events are written to.
     std::ostream &_sink;
 
-public: /// NOTE: THIS IS TEMPORARY; remove at the end; these should be private
-
     /// Queue storing INFO level log events.
     log_t _log_queue_INFO;
 
