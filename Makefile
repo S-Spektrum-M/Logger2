@@ -15,7 +15,7 @@ check:
 	cppcheck -Iinclude/ --enable=all --suppress=missingIncludeSystem \
 		--suppress=checkersReport src tests
 
-build/LogDemo: $(LOG_LIB) tests/demo.cpp
+build/LogDemo: $(LOG_LIB) tests/Demo.cpp
 	$(CXX) $^ -o $@
 
 build/perfTest: $(LOG_LIB) tests/Perf.cpp
