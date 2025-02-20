@@ -86,8 +86,7 @@ public:
    */
   template <typename... Args>
   static std::unique_ptr<Message> Make(Args... args) {
-    Message *ptr = new Message(args...);
-    return std::unique_ptr<Message>{ptr};
+    return std::make_unique(args...);
   }
 };
 
@@ -102,8 +101,7 @@ public:
   Message(const std::string &str) { val = std::make_unique<std::string>(str); }
   operator std::string() override { return *val; }
   static std::unique_ptr<Message<std::string>> Make(const std::string &value) {
-    Message *ptr = new Message(value);
-    return std::unique_ptr<Message>{ptr};
+    return std::make_unique<Message<std::string>>(value);
   }
 };
 } // namespace Spektral::Log

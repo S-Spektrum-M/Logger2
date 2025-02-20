@@ -29,8 +29,8 @@ void BM_LogTestInt(benchmark::State &state) {
   Logger logger(l);
   for (size_t ii = 0; auto _ : state) {
     logger.insert_INFO({Spektral::Log::INFO,
-                   Spektral::Log::Source<std::string>::Make("main"),
-                   Message_int::Make(ii++)});
+                        Spektral::Log::Source<std::string>::Make("main"),
+                        Message_int::Make(ii++)});
   }
   l.close();
 }
@@ -46,14 +46,23 @@ void BM_LogTestRandInt(benchmark::State &state) {
   }
   int ii = 0;
   for (auto _ : state) {
-    logger.insert(Spektral::Log::INFO, {Spektral::Log::INFO,
-                        Spektral::Log::Source<std::string>::Make("benchmark"),
-                        Message_int::Make(rands[ii++])});
+    logger.insert(Spektral::Log::INFO,
+                  {Spektral::Log::INFO,
+                   Spektral::Log::Source<std::string>::Make("benchmark"),
+                   Message_int::Make(rands[ii++])});
   }
   l.close();
 }
 
-BENCHMARK(BM_LogTestInt);
+void BM_X(benchmark::State &state) {
+  Spektral::Log::Logger i(std::cout);
+  for (size_t ii = 0; auto _ : state)
+    i.insert_INFO({Spektral::Log::INFO,
+                   Spektral::Log::Source<std::string>::Make("main"),
+                   Message_int::Make(ii++)});
+}
+
+BENCHMARK(BM_X);
 // BENCHMARK(BM_LogTestRandInt)
 //     ->Iterations(NUM_BENCH_ITERS)
 //     ->Repetitions(5)
