@@ -26,9 +26,8 @@ public:
 };
 
 auto main() -> int {
-  std::ofstream l{"output_logs/demo.log"};
-  Spektral::Log::Logger i(l);
-  for (int ii = 0; ii < 50000; ++ii)
+  Spektral::Log::Logger i(std::cout);
+  for (int ii = 0; ii < 500000; ++ii)
     i.insert_INFO({Spektral::Log::INFO,
                    Spektral::Log::Source<std::string>::Make("main"),
                    Message_int::Make(ii)});
