@@ -1,4 +1,4 @@
-#include "Logger.hpp"
+#include "FileLogger.hpp"
 #include "Sources.hpp"
 #include <fstream>
 #include <print>
@@ -26,7 +26,7 @@ public:
 };
 
 auto main() -> int {
-  Spektral::Log::Logger logger("output_logs/demo.log");
+  Spektral::Log::FileLogger logger("output_logs/demo.log");
   for (int i = 0; i < 10; ++i) {
     for (int ii = 0; ii < 50000; ++ii)
       logger.insert_INFO({Spektral::Log::INFO,

@@ -6,7 +6,7 @@
 
 namespace Spektral::Log {
 
-class Logger {
+class FileLogger {
 public:
   // using log_t = std::deque<LogEvent *>;
   using log_t = std::deque<std::shared_ptr<LogEvent>>;
@@ -19,8 +19,8 @@ public:
    * This stream can be a standard output or any other stream object like
    * std::ofstream. Example: Logger(std::cout);
    */
-  explicit Logger(std::string file_path);
-  ~Logger();
+  explicit FileLogger(std::string file_path);
+  ~FileLogger();
 
   /// @brief Inserts a log event with INFO severity level into the queue.
   ///

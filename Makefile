@@ -21,10 +21,13 @@ build/LogDemo: $(LOG_LIB) tests/Demo.cpp
 build/perfTest: $(LOG_LIB) tests/Perf.cpp
 	$(CXX) $^ -o $@ -lbenchmark
 
-$(LOG_LIB): build/Logger.o build/LogEvent.o
+$(LOG_LIB): build/FileLogger.o build/ConsoleLogger.o build/LogEvent.o
 	$(CXX) -shared -fPIC $^ -o $@
 
-build/Logger.o: src/Logger.cpp include/Logger.hpp
+build/ConsoleLogger.o: src/ConsoleLogger.cpp include/ConsoleLogger.hpp
+	$(CXX) -c -fPIC $< -o $@
+
+build/FileLogger.o: src/FileLogger.cpp include/FileLogger.hpp
 	$(CXX) -c -fPIC $< -o $@
 
 build/LogEvent.o: src/LogEvent.cpp include/LogEvent.hpp

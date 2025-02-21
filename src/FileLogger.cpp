@@ -1,4 +1,4 @@
-#include "Logger.hpp"
+#include "FileLogger.hpp"
 #include "LogCustomErrors.hpp"
 #include <future>
 #include <iostream>
@@ -6,74 +6,72 @@
 
 namespace Spektral::Log {
 
-Logger::Logger(std::string file_path) {
+FileLogger::FileLogger(std::string file_path) {
   _sink = std::make_shared<std::ofstream>(file_path);
   _ref = start_backend(_can_continue);
 }
 
-Logger::~Logger() {
+FileLogger::~FileLogger() {
   _can_continue = false;
   _ref.get();
   _sink->close();
 }
 
-void Logger::insert_INFO(LogEvent &l) {
+void FileLogger::insert_INFO(LogEvent &l) {
   if (_log_queue_INFO.size() == LOG_MAX_SZ)
     throw full_queue_exception(INFO);
-  _log_queue_INFO.push_back(std ::shared_ptr<LogEvent>{&l});
-  ;
+  _log_queue_INFO.push_back(std::shared_ptr<LogEvent>{&l});
 }
 
-void Logger::insert_INFO(LogEvent &&l) {
+void FileLogger::insert_INFO(LogEvent &&l) {
   if (_log_queue_INFO.size() == LOG_MAX_SZ)
     throw full_queue_exception(INFO);
-  _log_queue_INFO.push_back(std ::make_shared<LogEvent>(std ::move(l)));
-  ;
+  _log_queue_INFO.push_back(std::make_shared<LogEvent>(std ::move(l)));
 }
 
-void Logger::insert_WARN(LogEvent &l) {
+void FileLogger::insert_WARN(LogEvent &l) {
   if (_log_queue_WARN.size() == LOG_MAX_SZ)
     throw full_queue_exception(WARN);
-  _log_queue_WARN.push_back(std ::shared_ptr<LogEvent>{&l});
+  _log_queue_WARN.push_back(std::shared_ptr<LogEvent>{&l});
   ;
 }
 
-void Logger::insert_WARN(LogEvent &&l) {
+void FileLogger::insert_WARN(LogEvent &&l) {
   if (_log_queue_WARN.size() == LOG_MAX_SZ)
     throw full_queue_exception(WARN);
-  _log_queue_WARN.push_back(std ::shared_ptr<LogEvent>{&l});
+  _log_queue_WARN.push_back(std::shared_ptr<LogEvent>{&l});
   ;
 }
 
-void Logger::insert_DEBUG(LogEvent &l) {
+void FileLogger::insert_DEBUG(LogEvent &l) {
   if (_log_queue_DEBUG.size() == LOG_MAX_SZ)
     throw full_queue_exception(DEBUG);
-  _log_queue_DEBUG.push_back(std ::shared_ptr<LogEvent>{&l});
+  _log_queue_DEBUG.push_back(std::shared_ptr<LogEvent>{&l});
   ;
 }
 
-void Logger::insert_DEBUG(LogEvent &&l) {
+void FileLogger::insert_DEBUG(LogEvent &&l) {
   if (_log_queue_DEBUG.size() == LOG_MAX_SZ)
     throw full_queue_exception(DEBUG);
-  _log_queue_DEBUG.push_back(std ::make_shared<LogEvent>(std ::move(l)));
+  _log_queue_DEBUG.push_back(std::make_shared<LogEvent>(std ::move(l)));
   ;
 }
 
-void Logger::insert_ERROR(LogEvent &l) {
+void FileLogger::insert_ERROR(LogEvent &l) {
   if (_log_queue_ERROR.size() == LOG_MAX_SZ)
     throw full_queue_exception(ERROR);
-  _log_queue_ERROR.push_back(std ::shared_ptr<LogEvent>{&l});
+  _log_queue_ERROR.push_back(std::shared_ptr<LogEvent>{&l});
   ;
 }
 
-void Logger::insert_ERROR(LogEvent &&l) {
+void FileLogger::insert_ERROR(LogEvent &&l) {
   if (_log_queue_ERROR.size() == LOG_MAX_SZ)
     throw full_queue_exception(ERROR);
-  _log_queue_ERROR.push_back(std ::make_shared<LogEvent>(std ::move(l)));
+  _log_queue_ERROR.push_back(std::make_shared<LogEvent>(std ::move(l)));
   ;
 }
 
-void Logger::insert(LogLevel lvl, LogEvent &event) {
+void FileLogger::insert(LogLevel lvl, LogEvent &event) {
   switch (lvl) {
   case INFO:
     insert_INFO(event);
@@ -90,7 +88,7 @@ void Logger::insert(LogLevel lvl, LogEvent &event) {
   }
 }
 
-void Logger::insert(LogLevel lvl, LogEvent &&event) {
+void FileLogger::insert(LogLevel lvl, LogEvent &&event) {
   switch (lvl) {
   case INFO:
     insert_INFO(event);
@@ -107,7 +105,7 @@ void Logger::insert(LogLevel lvl, LogEvent &&event) {
   }
 }
 
-std::future<void> Logger::start_backend(std::atomic<bool> &can_continue) {
+std::future<void> FileLogger::start_backend(std::atomic<bool> &can_continue) {
   return std::async(std::launch::async, [this, &can_continue]() -> void {
     std::vector<log_t *> logs = {&_log_queue_INFO, &_log_queue_WARN,
                                  &_log_queue_DEBUG, &_log_queue_ERROR};

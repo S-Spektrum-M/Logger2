@@ -1,5 +1,5 @@
 #include "Sources.hpp"
-#include <Logger.hpp>
+#include "FileLogger.hpp"
 #include <benchmark/benchmark.h>
 #include <fstream>
 #include <iostream>
@@ -21,16 +21,16 @@ std::random_device dev;
 std::mt19937 rng(dev());
 std::uniform_int_distribution<int> dist(0, 1000000000);
 
+Spektral::Log::FileLogger logger("output_logs/demo.log");
 auto generateRandomInt() -> int { return dist(rng); }
 
 void BM_X(benchmark::State &state) {
-  Spektral::Log::Logger i("output_logs/demo.log");
   for (int ii = 0; auto _ : state) {
-      i.insert_INFO({Spektral::Log::INFO,
-                     Spektral::Log::Source<std::string>::Make("main"),
-                     Message_int::Make(ii++)});
+    logger.insert_INFO({Spektral::Log::INFO,
+                        Spektral::Log::Source<std::string>::Make("main"),
+                        Message_int::Make(ii++)});
   }
 }
 
-BENCHMARK(BM_X)->Threads(1);
+BENCHMARK(BM_X)->Iterations(1000000);
 BENCHMARK_MAIN();
