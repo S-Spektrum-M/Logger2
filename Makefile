@@ -2,7 +2,7 @@ CXXFLAGS_WARN 			:= -Wall -Werror -Wpedantic
 CXXFLAGS_OPTIM 			:= -O3
 CXXFLAGS_INCLUDE_PATHS 	:= -Iinclude
 CXXFLAGS_VERSION		:= -std=c++23
-# CXXFLAGS_SAN 			:= -fsanitize=address
+# CXXFLAGS_SAN 			:= -fsanitize=address -g
 CXXFLAGS := $(CXXFLAGS_WARN) $(CXXFLAGS_OPTIM) $(CXXFLAGS_INCLUDE_PATHS)\
 			$(CXXFLAGS_VERSION) $(CXXFLAGS_SAN)
 CXX := /usr/bin/clang++-18 $(CXXFLAGS)
@@ -24,11 +24,11 @@ build/perfTest: $(LOG_LIB) tests/Perf.cpp
 $(LOG_LIB): build/Logger.o build/LogEvent.o
 	$(CXX) -shared -fPIC $^ -o $@
 
-build/Logger.o: src/Logger.cpp
-	$(CXX) -c -fPIC $^ -o $@
+build/Logger.o: src/Logger.cpp include/Logger.hpp
+	$(CXX) -c -fPIC $< -o $@
 
-build/LogEvent.o: src/LogEvent.cpp
-	$(CXX) -c -fPIC $^ -o $@
+build/LogEvent.o: src/LogEvent.cpp include/LogEvent.hpp
+	$(CXX) -c -fPIC $< -o $@
 
 clean:
 	rm -rf build/*

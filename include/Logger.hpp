@@ -1,15 +1,15 @@
 #pragma once
 #include "LogEvent.hpp"
+#include <deque>
+#include <fstream>
 #include <future>
-#include <ostream>
-#include <queue>
 
 namespace Spektral::Log {
 
 class Logger {
 public:
   // using log_t = std::deque<LogEvent *>;
-  using log_t = std::deque<std::unique_ptr<LogEvent>>;
+  using log_t = std::deque<std::shared_ptr<LogEvent>>;
   /**
    * @brief Constructor that takes a stream to which logs will be written.
    *
@@ -19,24 +19,8 @@ public:
    * This stream can be a standard output or any other stream object like
    * std::ofstream. Example: Logger(std::cout);
    */
-  explicit Logger(std::ostream &&sink) : _sink(sink) {
-    _ref = start_backend(_can_continue);
-  }
-
-  /// @brief Constructor that takes a reference to a stream to which logs will
-  /// be written.
-  ///
-  /// This constructor allows for the use of existing stream objects, such as
-  /// std::clog, without consuming them. Example: std::ofstream
-  /// file("logfile.txt"); Logger(file);
-  explicit Logger(std::ostream &sink) : _sink(sink) {
-    _ref = start_backend(_can_continue);
-  }
-
-  ~Logger() {
-    _can_continue = false;
-    _ref.get();
-  }
+  explicit Logger(std::string file_path);
+  ~Logger();
 
   /// @brief Inserts a log event with INFO severity level into the queue.
   ///
@@ -105,7 +89,7 @@ public:
 
 private:
   /// The output stream where log events are written to.
-  std::ostream &_sink;
+  std::shared_ptr<std::ofstream> _sink;
 
   /// Queue storing INFO level log events.
   log_t _log_queue_INFO;

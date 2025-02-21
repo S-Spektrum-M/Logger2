@@ -29,7 +29,7 @@ private:
   LogLevel error_level;
 
 public:
-  full_queue_exception(const LogLevel &lvl) : error_level(lvl) {}
+  explicit full_queue_exception(const LogLevel &lvl) : error_level(lvl) {}
   const char *what() const noexcept override {
     switch (error_level) {
     case INFO:
@@ -41,6 +41,7 @@ public:
     case ERROR:
       return "Error pushing to ERROR level\n";
     }
+    return "Error pushing to UNKOWN level\n";
   }
 };
 
