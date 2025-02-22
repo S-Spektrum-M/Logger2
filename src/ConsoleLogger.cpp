@@ -70,14 +70,14 @@ ConsoleLogger::start_backend(std::atomic<bool> &can_continue) {
       if (!_stdout_log.empty()) {
         auto &front = _stdout_log.front();
         if (front) {
-          std::cout << front->operator std::string() << std::flush;
+          std::cout << front->operator std::string_view() << std::flush;
         }
         _stdout_log.pop_front();
       }
       if (!_stderr_log.empty()) {
         auto &front = _stderr_log.front();
         if (front) {
-          std::cout << front->operator std::string() << std::flush;
+          std::cout << front->operator std::string_view() << std::flush;
         }
         _stderr_log.pop_front();
       }
@@ -87,14 +87,14 @@ ConsoleLogger::start_backend(std::atomic<bool> &can_continue) {
       if (!_stdout_log.empty()) {
         auto &front = _stdout_log.front();
         if (front) {
-          std::cout << front->operator std::string() << std::flush;
+          std::cout << front->operator std::string_view() << std::flush;
         }
         _stdout_log.pop_front();
       }
       if (!_stderr_log.empty()) {
         auto &front = _stderr_log.front();
         if (front) {
-          std::cout << front->operator std::string() << std::flush;
+          std::cout << front->operator std::string_view() << std::flush;
         }
         _stderr_log.pop_front();
       }

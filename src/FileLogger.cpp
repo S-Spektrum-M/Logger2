@@ -114,7 +114,7 @@ std::future<void> FileLogger::start_backend(std::atomic<bool> &can_continue) {
         if (!log->empty()) {
           auto &front = log->front();
           if (front) {
-            (*_sink) << front->operator std::string() << std::flush;
+            (*_sink) << front->operator std::string_view() << std::flush;
           }
           log->pop_front();
         }
@@ -127,7 +127,7 @@ std::future<void> FileLogger::start_backend(std::atomic<bool> &can_continue) {
         if (!log->empty()) {
           auto &front = log->front();
           if (front) {
-            (*_sink) << front->operator std::string() << std::flush;
+            (*_sink) << front->operator std::string_view() << std::flush;
           }
           log->pop_front();
         }

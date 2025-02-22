@@ -46,7 +46,7 @@ public:
    * @brief Converts the source to a string representation.
    * @return String representation of the source.
    */
-  virtual operator std::string() = 0;
+  virtual operator std::string_view() = 0;
   virtual ~ISource() = default;
 };
 
@@ -60,7 +60,7 @@ public:
    * @brief Converts the message to a string representation.
    * @return String representation of the message.
    */
-  virtual operator std::string() = 0;
+  virtual operator std::string_view() = 0;
   virtual ~IMessage() = default;
 };
 
@@ -86,7 +86,7 @@ struct LogEvent {
    * @brief Converts the log event to a string representation.
    * @return String representation of the log event.
    */
-  operator std::string();
+  operator std::string_view();
 };
 
 } // namespace Spektral::Log

@@ -10,8 +10,12 @@ class Message_int : public Spektral::Log::IMessage {
   int val;
 
 public:
-  operator std::string() override { return std::to_string(val); }
-  explicit Message_int(int v) { val = v; }
+  operator std::string_view() {
+    std::string k = std::to_string(val);
+    std::string_view s = k;
+    return s;
+  }
+  Message_int(int v) { val = v; }
   static std::unique_ptr<Message_int> Make(int v) {
     return std::make_unique<Message_int>(v);
   }

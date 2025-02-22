@@ -7,7 +7,11 @@ class Source_int : public Spektral::Log::ISource {
   int val;
 
 public:
-  operator std::string() { return std::to_string(val); }
+  operator std::string_view() {
+    std::string k = std::to_string(val);
+    std::string_view s = k;
+    return s;
+  }
   Source_int(int v) { val = v; }
   static std::unique_ptr<Source_int> Make(int v) {
     return std::make_unique<Source_int>(v);
@@ -18,7 +22,11 @@ class Message_int : public Spektral::Log::IMessage {
   int val;
 
 public:
-  operator std::string() { return std::to_string(val); }
+  operator std::string_view() {
+    std::string k = std::to_string(val);
+    std::string_view s = k;
+    return s;
+  }
   Message_int(int v) { val = v; }
   static std::unique_ptr<Message_int> Make(int v) {
     return std::make_unique<Message_int>(v);

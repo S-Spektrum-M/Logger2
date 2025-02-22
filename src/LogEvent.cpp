@@ -27,27 +27,32 @@ Spektral::Log::LogEvent::LogEvent(LogEvent &&l) {
   level = std::move(l.level);
 }
 
-Spektral::Log::LogEvent::operator std::string() {
+Spektral::Log::LogEvent::operator std::string_view() {
+  std::string_view ret_strv;
   switch (level) {
   case INFO:
-    return std::format("INFO: {} {} from {}\n", time,
-                       message->operator std::string(),
-                       source->operator std::string());
+    ret_strv = std::format("INFO: {} {} from {}\n", time,
+                           message->operator std::string_view(),
+                           source->operator std::string_view());
+    break;
   case WARN:
-    return std::format("WARN: {} {} from {}\n", time,
-                       message->operator std::string(),
-                       source->operator std::string());
+    ret_strv = std::format("WARN: {} {} from {}\n", time,
+                           message->operator std::string_view(),
+                           source->operator std::string_view());
+    break;
   case DEBUG:
-    return std::format("DEBUG: {} {} from {}\n", time,
-                       message->operator std::string(),
-                       source->operator std::string());
+    ret_strv = std::format("DEBUG: {} {} from {}\n", time,
+                           message->operator std::string_view(),
+                           source->operator std::string_view());
+    break;
   case ERROR:
-    return std::format("ERROR: {} {} from {}\n", time,
-                       message->operator std::string(),
-                       source->operator std::string());
+    ret_strv = std::format("ERROR: {} {} from {}\n", time,
+                           message->operator std::string_view(),
+                           source->operator std::string_view());
     break;
   }
-  return std::format("UNKOWN_LEVEL: {} {} {}\n", time,
-                     message->operator std::string(),
-                     source->operator std::string());
+  ret_strv = std::format("UNKOWN_LEVEL: {} {} {}\n", time,
+                         message->operator std::string_view(),
+                         source->operator std::string_view());
+  return ret_strv;
 }
