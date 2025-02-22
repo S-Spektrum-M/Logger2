@@ -4,7 +4,6 @@
 #pragma once
 #include "LogEvent.hpp"
 #include <exception>
-#include <string>
 
 namespace Spektral::Log {
 class source_nullptr_excpetion : public std::exception {
@@ -12,7 +11,7 @@ public:
   source_nullptr_excpetion() {}
   const char *what() const noexcept override {
     return "Erorr initializing LogEvent because\n reccieved a nullptr for "
-           "ISource *";
+           "ISource *\n";
   }
 };
 
@@ -21,7 +20,7 @@ public:
   message_nullptr_excpetion() {}
   const char *what() const noexcept override {
     return "Erorr initializing LogEvent because\n reccieved a nullptr for "
-           "ISource *";
+           "ISource *\n";
   }
 };
 
@@ -30,18 +29,19 @@ private:
   LogLevel error_level;
 
 public:
-  full_queue_exception(const LogLevel &lvl) : error_level(lvl) {}
+  explicit full_queue_exception(const LogLevel &lvl) : error_level(lvl) {}
   const char *what() const noexcept override {
     switch (error_level) {
     case INFO:
-      return "Error pushing to INFO level";
+      return "Error pushing to INFO level\n";
     case WARN:
-      return "Error pushing to WARN level";
+      return "Error pushing to WARN level\n";
     case DEBUG:
-      return "Error pushing to DEBUG level";
+      return "Error pushing to DEBUG level\n";
     case ERROR:
-      return "Error pushing to ERROR level";
+      return "Error pushing to ERROR level\n";
     }
+    return "Error pushing to UNKOWN level\n";
   }
 };
 

@@ -1,4 +1,4 @@
-#include "FileLogger.hpp"
+#include "Logger.hpp"
 #include "Sources.hpp"
 #include <fstream>
 #include <print>
@@ -26,13 +26,12 @@ public:
 };
 
 auto main() -> int {
-  Spektral::Log::FileLogger logger("output_logs/demo.log");
-  for (int i = 0; i < 10; ++i) {
-    for (int ii = 0; ii < 50000; ++ii)
-      logger.insert_INFO({Spektral::Log::INFO,
-                          Spektral::Log::Source<std::string>::Make("main"),
-                          Message_int::Make(ii)});
-    std::cout << "Sleeping" << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-  }
+  // In commits before this(51fef4378fd26ad48b737a42696f533631ac842d and below)
+  // this will segfault since the underlying ofstream is deleted before the
+  // thread stops logging. We want to fix this by using shared_ptrs.
+  Spektral::Log::Logger i(std::ofstream{"output_logs/demo.log"});
+  for (int ii = 0; ii < 500000; ++ii)
+    i.insert_INFO({Spektral::Log::INFO,
+                   Spektral::Log::Source<std::string>::Make("main"),
+                   Message_int::Make(ii)});
 }
