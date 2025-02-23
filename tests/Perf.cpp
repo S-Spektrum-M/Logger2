@@ -1,36 +1,56 @@
-#include "Sources.hpp"
+#include "ConsoleLogger.hpp"
 #include "FileLogger.hpp"
+#include "LogCustomErrors.hpp"
+#include "Messages.hpp"
+#include "Sources.hpp"
 #include <benchmark/benchmark.h>
 #include <fstream>
 #include <iostream>
 #include <random>
 #define NUM_BENCH_ITERS 100000
 
-class Message_int : public Spektral::Log::IMessage {
-  int val;
-
-public:
-  operator std::string() override { return std::to_string(val); }
-  explicit Message_int(int v) { val = v; }
-  static std::unique_ptr<Message_int> Make(int v) {
-    return std::make_unique<Message_int>(v);
-  }
-};
-
-std::random_device dev;
-std::mt19937 rng(dev());
-std::uniform_int_distribution<int> dist(0, 1000000000);
-
-Spektral::Log::FileLogger logger("output_logs/demo.log");
-auto generateRandomInt() -> int { return dist(rng); }
-
-void BM_X(benchmark::State &state) {
-  for (int ii = 0; auto _ : state) {
-    logger.insert_INFO({Spektral::Log::INFO,
-                        Spektral::Log::Source<std::string>::Make("main"),
-                        Message_int::Make(ii++)});
+void BM_MakeSrc(benchmark::State &state) {
+  for (auto _ : state) {
+    Spektral::Log::Source<std::string>::Make("main");
   }
 }
 
-BENCHMARK(BM_X)->Iterations(1000000);
+void BM_MakeMessage(benchmark::State &state) {
+  for (auto _ : state) {
+    Spektral::Log::Message<std::string>::Make("main");
+  }
+}
+
+void BM_Console(benchmark::State &state) {
+  Spektral::Log::ConsoleLogger &cl =
+      Spektral::Log::ConsoleLogger::get_inst(Spektral::Log::INFO);
+  Spektral::Log::FileLogger logger("output_logs/demo.log");
+  for (const auto &_ : state) {
+    try {
+      cl.insert({Spektral::Log::INFO,
+                     Spektral::Log::Source<std::string>::Make("main"),
+                     Spektral::Log::Message<std::string>::Make("Hi")});
+    } catch (Spektral::Log::full_queue_exception &e) {
+      return;
+    }
+  }
+}
+
+static Spektral::Log::FileLogger logger("output_logs/demo.log");
+void BM_File(benchmark::State &state) {
+  for (const auto &_ : state) {
+    try {
+      logger.insert({Spektral::Log::INFO,
+                     Spektral::Log::Source<std::string>::Make("main"),
+                     Spektral::Log::Message<std::string>::Make("Hi")});
+    } catch (Spektral::Log::full_queue_exception &e) {
+      return;
+    }
+  }
+}
+
+BENCHMARK(BM_MakeSrc);
+BENCHMARK(BM_MakeMessage);
+BENCHMARK(BM_Console);
+BENCHMARK(BM_File)->Iterations(100000);
 BENCHMARK_MAIN();

@@ -97,13 +97,13 @@ public:
 // operator but it meets the requirements of StrConv
 template <> class Source<std::string> : public Spektral::Log::ISource {
 private:
-  std::unique_ptr<std::string> val;
+  std::string val;
 
 public:
-  Source(const std::string &str) { val = std::make_unique<std::string>(str); }
-  operator std::string() override { return *val; }
-  static std::unique_ptr<Source> Make(const std::string &value) {
-    return std::make_unique<Source>(value);
+  Source(std::string &&str) : val(str) {}
+  operator std::string() override { return val; }
+  static std::unique_ptr<Source> Make(std::string &&value) {
+    return std::make_unique<Source>(std::move(value));
   }
 };
 } // namespace Spektral::Log

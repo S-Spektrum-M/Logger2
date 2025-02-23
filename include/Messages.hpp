@@ -10,12 +10,6 @@
 
 namespace Spektral::Log {
 
-#ifndef Spektral__Log__STRCONV
-#define Spektral__Log__STRCONV
-template <typename T>
-concept StrConv = std::convertible_to<T, std::string>;
-#endif
-
 /**
  * @class Message
  * @brief A templated source class that implements the IMessage interface from
@@ -43,7 +37,7 @@ concept StrConv = std::convertible_to<T, std::string>;
  * The class is part of the Spektral::Log namespace, indicating its use within
  * Spektral::Logging system.
  */
-template <StrConv T> class Message : public Spektral::Log::IMessage {
+template <typename T> class Message : public Spektral::Log::IMessage {
 private:
   /**
    * @brief: val is the encapsulated value that this wrapper will hold onto.
@@ -95,13 +89,24 @@ public:
 // operator but it meets the requirements of StrConv
 template <> class Message<std::string> : public Spektral::Log::IMessage {
 private:
-  std::unique_ptr<std::string> val;
+  std::string val;
 
 public:
-  Message(const std::string &str) { val = std::make_unique<std::string>(str); }
-  operator std::string() override { return *val; }
-  static std::unique_ptr<Message<std::string>> Make(const std::string &value) {
-    return std::make_unique<Message<std::string>>(value);
+  Message(std::string &&str) : val(str) {}
+  operator std::string() override { return val; }
+  static std::unique_ptr<Message> Make(std::string &&value) {
+    return std::make_unique<Message>(std::move(value));
+  }
+};
+
+template <> class Message<int> : public Spektral::Log::IMessage {
+  int val;
+
+public:
+  operator std::string() override { return std::to_string(val); }
+  Message(int v) { val = v; }
+  static std::unique_ptr<Message> Make(int v) {
+    return std::make_unique<Message>(v);
   }
 };
 } // namespace Spektral::Log

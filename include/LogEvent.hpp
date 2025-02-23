@@ -79,8 +79,13 @@ struct LogEvent {
    * @param source Pointer to the source of the event.
    * @param message Pointer to the message of the event.
    */
-  LogEvent(LogLevel level, std::unique_ptr<ISource> source, std::unique_ptr<IMessage> message);
+  LogEvent(LogLevel level, std::unique_ptr<ISource> source,
+           std::unique_ptr<IMessage> message);
   LogEvent(LogEvent &&);
+  ~LogEvent() {
+    delete message.release();
+    delete source.release();
+  }
 
   /**
    * @brief Converts the log event to a string representation.

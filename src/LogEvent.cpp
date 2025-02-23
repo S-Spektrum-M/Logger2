@@ -45,7 +45,6 @@ Spektral::Log::LogEvent::operator std::string() {
     return std::format("ERROR: {} {} from {}\n", time,
                        message->operator std::string(),
                        source->operator std::string());
-    break;
   }
   return std::format("UNKOWN_LEVEL: {} {} {}\n", time,
                      message->operator std::string(),
