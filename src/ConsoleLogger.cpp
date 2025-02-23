@@ -2,64 +2,42 @@
 #include "LogCustomErrors.hpp"
 #include <cmath>
 #include <iostream>
-#define LOG_MAX_SZ 1000000
+#define LOG_MAX_SZ 100000000
 
 namespace Spektral::Log {
 ConsoleLogger *ConsoleLogger::inst = nullptr;
 
-ConsoleLogger::ConsoleLogger() { _ref = start_backend(_can_continue); }
+ConsoleLogger::ConsoleLogger(LogLevel min_level) : _min_level(min_level) {
+  _ref = start_backend(_can_continue);
+}
 
-ConsoleLogger &ConsoleLogger::get_inst() {
+ConsoleLogger::~ConsoleLogger() {
+  _can_continue = false;
+  _ref.get();
+  _stdout_log.clear();
+  _stderr_log.clear();
+  inst = nullptr;
+}
+
+ConsoleLogger &ConsoleLogger::get_inst(LogLevel min_level) {
   if (!inst)
-    inst = new ConsoleLogger();
+    inst = new ConsoleLogger(min_level);
   return *inst;
 }
-void ConsoleLogger::insert_INFO(LogEvent &l) {
-  if (_stdout_log.size() == LOG_MAX_SZ)
-    throw full_queue_exception(INFO);
-  _stdout_log.push_back(std::shared_ptr<LogEvent>{&l});
-}
 
-void ConsoleLogger::insert_INFO(LogEvent &&l) {
-  if (_stdout_log.size() == LOG_MAX_SZ)
-    throw full_queue_exception(INFO);
-  _stdout_log.push_back(std::make_shared<LogEvent>(std ::move(l)));
-}
-
-void ConsoleLogger::insert_WARN(LogEvent &l) {
-  if (_stdout_log.size() == LOG_MAX_SZ)
-    throw full_queue_exception(WARN);
-  _stdout_log.push_back(std::shared_ptr<LogEvent>{&l});
-}
-
-void ConsoleLogger::insert_WARN(LogEvent &&l) {
-  if (_stdout_log.size() == LOG_MAX_SZ)
-    throw full_queue_exception(WARN);
-  _stdout_log.push_back(std::make_shared<LogEvent>(std ::move(l)));
-}
-
-void ConsoleLogger::insert_DEBUG(LogEvent &l) {
-  if (_stdout_log.size() == LOG_MAX_SZ)
-    throw full_queue_exception(DEBUG);
-  _stdout_log.push_back(std::shared_ptr<LogEvent>{&l});
-}
-
-void ConsoleLogger::insert_DEBUG(LogEvent &&l) {
-  if (_stdout_log.size() == LOG_MAX_SZ)
-    throw full_queue_exception(DEBUG);
-  _stdout_log.push_back(std::make_shared<LogEvent>(std ::move(l)));
-}
-
-void ConsoleLogger::insert_ERROR(LogEvent &l) {
-  if (_stderr_log.size() == LOG_MAX_SZ)
-    throw full_queue_exception(ERROR);
-  _stderr_log.push_back(std::shared_ptr<LogEvent>{&l});
-}
-
-void ConsoleLogger::insert_ERROR(LogEvent &&l) {
-  if (_stderr_log.size() == LOG_MAX_SZ)
-    throw full_queue_exception(ERROR);
-  _stderr_log.push_back(std::make_shared<LogEvent>(std ::move(l)));
+void ConsoleLogger::insert(LogEvent &&l) {
+  if (l.level < _min_level) return;
+  switch (l.level) {
+  case INFO:
+  case WARN:
+  case DEBUG:
+    _stdout_log.emplace_back(std::make_shared<LogEvent>(std::move(l)));
+    break;
+  case ERROR:
+  default:
+    _stderr_log.emplace_back(std::make_shared<LogEvent>(std::move(l)));
+    break;
+  }
 }
 
 std::future<void>
@@ -70,14 +48,14 @@ ConsoleLogger::start_backend(std::atomic<bool> &can_continue) {
       if (!_stdout_log.empty()) {
         auto &front = _stdout_log.front();
         if (front) {
-          std::cout << front->operator std::string_view() << std::flush;
+          std::cout << front->operator std::string();
         }
         _stdout_log.pop_front();
       }
       if (!_stderr_log.empty()) {
         auto &front = _stderr_log.front();
         if (front) {
-          std::cout << front->operator std::string_view() << std::flush;
+          std::cerr << front->operator std::string();
         }
         _stderr_log.pop_front();
       }
@@ -87,14 +65,14 @@ ConsoleLogger::start_backend(std::atomic<bool> &can_continue) {
       if (!_stdout_log.empty()) {
         auto &front = _stdout_log.front();
         if (front) {
-          std::cout << front->operator std::string_view() << std::flush;
+          std::cout << front->operator std::string();
         }
         _stdout_log.pop_front();
       }
       if (!_stderr_log.empty()) {
         auto &front = _stderr_log.front();
         if (front) {
-          std::cout << front->operator std::string_view() << std::flush;
+          std::cerr << front->operator std::string();
         }
         _stderr_log.pop_front();
       }

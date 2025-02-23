@@ -1,6 +1,6 @@
 /// @file: include/Messages.hpp
 ///
-/// 1. defines the StrvConv<T> concept, which checks to make sure that a type
+/// 1. defines the StrConv<T> concept, which checks to make sure that a type
 /// defines a string conversion operator.
 /// 2. provides class Message<T>, a encapsulation around a value of type T,
 /// which implements IMessage.
@@ -9,12 +9,6 @@
 #include "LogEvent.hpp"
 
 namespace Spektral::Log {
-
-#ifndef Spektral__Log__STRCONV
-#define Spektral__Log__STRCONV
-template <typename T>
-concept StrvConv = std::convertible_to<T, std::string_view>;
-#endif
 
 /**
  * @class Message
@@ -43,7 +37,7 @@ concept StrvConv = std::convertible_to<T, std::string_view>;
  * The class is part of the Spektral::Log namespace, indicating its use within
  * Spektral::Logging system.
  */
-template <StrvConv T> class Message : public Spektral::Log::IMessage {
+template <typename T> class Message : public Spektral::Log::IMessage {
 private:
   /**
    * @brief: val is the encapsulated value that this wrapper will hold onto.
@@ -62,7 +56,7 @@ public:
     val = std::make_unique<T>(args...);
   }
 
-  operator std::string_view() override { return val->operator std::string_view(); }
+  operator std::string() override { return val->operator std::string(); }
   /**
    * @brief Creates and returns a pointer to a new Message object.
    *
@@ -92,16 +86,27 @@ public:
 
 // TODO: doc
 // This needs to be specialized bc std::string doesn't define std::string
-// operator but it meets the requirements of StrvConv
+// operator but it meets the requirements of StrConv
 template <> class Message<std::string> : public Spektral::Log::IMessage {
 private:
-  std::unique_ptr<std::string> val;
+  std::string val;
 
 public:
-  Message(const std::string &str) { val = std::make_unique<std::string>(str); }
-  operator std::string_view() override { return *val; }
-  static std::unique_ptr<Message<std::string>> Make(const std::string &value) {
-    return std::make_unique<Message<std::string>>(value);
+  Message(std::string &&str) : val(str) {}
+  operator std::string() override { return val; }
+  static std::unique_ptr<Message> Make(std::string &&value) {
+    return std::make_unique<Message>(std::move(value));
+  }
+};
+
+template <> class Message<int> : public Spektral::Log::IMessage {
+  int val;
+
+public:
+  operator std::string() override { return std::to_string(val); }
+  Message(int v) { val = v; }
+  static std::unique_ptr<Message> Make(int v) {
+    return std::make_unique<Message>(v);
   }
 };
 } // namespace Spektral::Log

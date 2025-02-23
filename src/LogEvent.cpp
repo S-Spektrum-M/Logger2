@@ -27,32 +27,26 @@ Spektral::Log::LogEvent::LogEvent(LogEvent &&l) {
   level = std::move(l.level);
 }
 
-Spektral::Log::LogEvent::operator std::string_view() {
-  std::string_view ret_strv;
+Spektral::Log::LogEvent::operator std::string() {
   switch (level) {
   case INFO:
-    ret_strv = std::format("INFO: {} {} from {}\n", time,
-                           message->operator std::string_view(),
-                           source->operator std::string_view());
-    break;
+    return std::format("INFO: {} {} from {}\n", time,
+                       message->operator std::string(),
+                       source->operator std::string());
   case WARN:
-    ret_strv = std::format("WARN: {} {} from {}\n", time,
-                           message->operator std::string_view(),
-                           source->operator std::string_view());
-    break;
+    return std::format("WARN: {} {} from {}\n", time,
+                       message->operator std::string(),
+                       source->operator std::string());
   case DEBUG:
-    ret_strv = std::format("DEBUG: {} {} from {}\n", time,
-                           message->operator std::string_view(),
-                           source->operator std::string_view());
-    break;
+    return std::format("DEBUG: {} {} from {}\n", time,
+                       message->operator std::string(),
+                       source->operator std::string());
   case ERROR:
-    ret_strv = std::format("ERROR: {} {} from {}\n", time,
-                           message->operator std::string_view(),
-                           source->operator std::string_view());
-    break;
+    return std::format("ERROR: {} {} from {}\n", time,
+                       message->operator std::string(),
+                       source->operator std::string());
   }
-  ret_strv = std::format("UNKOWN_LEVEL: {} {} {}\n", time,
-                         message->operator std::string_view(),
-                         source->operator std::string_view());
-  return ret_strv;
+  return std::format("UNKOWN_LEVEL: {} {} {}\n", time,
+                     message->operator std::string(),
+                     source->operator std::string());
 }

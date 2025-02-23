@@ -46,7 +46,7 @@ public:
    * @brief Converts the source to a string representation.
    * @return String representation of the source.
    */
-  virtual operator std::string_view() = 0;
+  virtual operator std::string() = 0;
   virtual ~ISource() = default;
 };
 
@@ -60,7 +60,7 @@ public:
    * @brief Converts the message to a string representation.
    * @return String representation of the message.
    */
-  virtual operator std::string_view() = 0;
+  virtual operator std::string() = 0;
   virtual ~IMessage() = default;
 };
 
@@ -79,14 +79,19 @@ struct LogEvent {
    * @param source Pointer to the source of the event.
    * @param message Pointer to the message of the event.
    */
-  LogEvent(LogLevel level, std::unique_ptr<ISource> source, std::unique_ptr<IMessage> message);
+  LogEvent(LogLevel level, std::unique_ptr<ISource> source,
+           std::unique_ptr<IMessage> message);
   LogEvent(LogEvent &&);
+  ~LogEvent() {
+    delete message.release();
+    delete source.release();
+  }
 
   /**
    * @brief Converts the log event to a string representation.
    * @return String representation of the log event.
    */
-  operator std::string_view();
+  operator std::string();
 };
 
 } // namespace Spektral::Log
