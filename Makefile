@@ -8,14 +8,15 @@ CXXFLAGS := $(CXXFLAGS_WARN) $(CXXFLAGS_OPTIM) $(CXXFLAGS_INCLUDE_PATHS)\
 CXX := /usr/bin/clang++-18 $(CXXFLAGS)
 LOG_LIB := build/SpektralLogger.so
 
-all: build/LogDemo tests
+all: $(LOG_LIB)
+demos: build/console_log_demo
 tests: build/perfTest
 
 check:
 	cppcheck -Iinclude/ --enable=all --suppress=missingIncludeSystem \
 		--suppress=checkersReport src tests
 
-build/LogDemo: $(LOG_LIB) tests/Demo.cpp
+build/console_log_demo: $(LOG_LIB) demos/console_log_demo.cpp
 	$(CXX) $^ -o $@
 
 build/perfTest: $(LOG_LIB) tests/Perf.cpp
