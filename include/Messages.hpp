@@ -87,13 +87,35 @@ public:
 // TODO: doc
 // This needs to be specialized bc std::string doesn't define std::string
 // operator but it meets the requirements of StrConv
+/**
+ * @brief A specialization for Spektral::Log::Message for std::string values.
+ *
+ * This class had to be defined because std::string doesn't define operator
+ * std::string
+ */
 template <> class Message<std::string> : public Spektral::Log::IMessage {
 private:
-  std::string val;
+  /**
+   * @brief: The encapsulated value that this wrapper will hold onto.
+   */
+  std::unique_ptr<std::string> val;
 
 public:
-  Message(std::string &&str) : val(str) {}
-  operator std::string() override { return val; }
+  /**
+   * @brief A copy constructor for use EXCLUSIVELY by Message<std::string>::Make;
+   *
+   * @param str const std::string & The value to copy from.
+   * T.
+   */
+  Message(const std::string &str) { val = std::make_unique<std::string>(str); }
+  /**
+   * @brief A move constructor for use EXCLUSIVELY by Message<std::string>::Make;
+   *
+   * @param str const std::string The value to move from.
+   * T.
+   */
+  Message(std::string &&str) { val = std::make_unique<std::string>(str); }
+  operator std::string() override { return *val; }
   static std::unique_ptr<Message> Make(std::string &&value) {
     return std::make_unique<Message>(std::move(value));
   }

@@ -5,10 +5,7 @@ static_assert(__cplusplus >= 202002L,
               "Spektral::Log requires C++20 at minimum");
 
 // TODO: remove when I implement
-static_assert(false, "The following functions are not yet defined:\n"
-                     "1. Spektral::Log::make_log()\n"
-                     "2. Spektral::Log::get_log()\n"
-);
+static_assert(false, "Do not use frontend API yet.");
 
 // TODO: 1.
 

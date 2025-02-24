@@ -14,6 +14,14 @@ namespace Spektral::Log {
 
 #ifndef Spektral__Log__STRCONV
 #define Spektral__Log__STRCONV
+/**
+ * @brief Concept representing types that can be converted to std::string.
+ *
+ * This concept checks whether the given type `T` is convertible to
+ * `std::string`. This allows for more robust and type-safe code when dealing
+ * with string conversions. This is specifically made for use in the
+ * Spektral::Log::Source class.
+ */
 template <typename T>
 concept StrConv = std::convertible_to<T, std::string>;
 #endif
@@ -64,6 +72,9 @@ public:
     val = std::make_unique<T>(args...);
   }
 
+  /**
+   * @brief Convert the encapsulated value to a string when logging.
+   */
   operator std::string() override { return val->operator std::string(); }
   /**
    * @brief Creates and returns a pointer to a new Source object.
@@ -77,14 +88,6 @@ public:
    * Source constructor.
    * @return A unique pointer to a newly created Source object initialized with
    * the provided arguments.
-   *
-   * @note
-   * - This function dynamically allocates memory for a new Source object,
-   *   so it is the caller's responsibility to manage (i.e., free) this memory
-   * appropriately when it is no longer needed to avoid memory leaks.
-   * - The function relies on perfect forwarding of arguments to ensure that
-   * lvalues and rvalues are handled correctly in passing them to the Source
-   * constructor.
    */
   template <typename... Args>
   static std::unique_ptr<Source> Make(Args... args) {
@@ -92,16 +95,51 @@ public:
   }
 };
 
-// TODO: doc
-// This needs to be specialized bc std::string doesn't define std::string
-// operator but it meets the requirements of StrConv
+/**
+ * @brief A specialization for Spektral::Log::Source for std::string values.
+ *
+ * This class had to be defined because std::string doesn't define operator
+ * std::string
+ */
 template <> class Source<std::string> : public Spektral::Log::ISource {
 private:
-  std::string val;
+  /**
+   * @brief: val is the encapsulated value that this wrapper will hold onto.
+   */
+  std::unique_ptr<std::string> val;
 
 public:
-  Source(std::string &&str) : val(str) {}
-  operator std::string() override { return val; }
+  /**
+   * @brief A copy constructor for use EXCLUSIVELY by Source<std::string>::Make;
+   *
+   * @param str const std::string & The value to copy from.
+   * T.
+   */
+  Source(const std::string &str) { val = std::make_unique<std::string>(str); }
+  /**
+   * @brief A move constructor for use EXCLUSIVELY by Source<std::string>::Make;
+   *
+   * @param str const std::string The value to move from.
+   * T.
+   */
+  Source(std::string &&str) { val = std::make_unique<std::string>(str); }
+  /**
+   * @brief Convert the encapsulated value to a string when logging.
+   */
+  operator std::string() override { return *val; }
+  /**
+   * @brief Creates and returns a pointer to a new Source object.
+   *
+   * This is a templated factory function that allows for the creation of
+   * a Source object using variadic template arguments. It forwards these
+   * arguments directly to the constructor of Source.
+   *
+   * @tparam Args The types of the arguments passed to the Source constructor.
+   * @param val std::string forwarded to the constructor.
+   * Source constructor.
+   * @return A unique pointer to a newly created Source object initialized with
+   * the provided arguments.
+   */
   static std::unique_ptr<Source> Make(std::string &&value) {
     return std::make_unique<Source>(std::move(value));
   }
