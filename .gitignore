@@ -3,3 +3,4 @@ build/*
 compile_commands.json
 output_logs/
 *.log
+doxygen-docs/

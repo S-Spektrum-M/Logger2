@@ -2,7 +2,7 @@ CXXFLAGS_WARN 			:= -Wall -Werror -Wpedantic
 CXXFLAGS_OPTIM 			:= -O3
 CXXFLAGS_INCLUDE_PATHS 	:= -Iinclude
 CXXFLAGS_VERSION		:= -std=c++23
-# CXXFLAGS_SAN 			:= -fsanitize=address -g
+CXXFLAGS_SAN 			:= -fsanitize=address -g
 CXXFLAGS := $(CXXFLAGS_WARN) $(CXXFLAGS_OPTIM) $(CXXFLAGS_INCLUDE_PATHS)\
 			$(CXXFLAGS_VERSION) $(CXXFLAGS_SAN)
 CXX := /usr/bin/clang++-18 $(CXXFLAGS)
@@ -16,7 +16,13 @@ check:
 	cppcheck -Iinclude/ --enable=all --suppress=missingIncludeSystem \
 		--suppress=checkersReport src tests
 
+doxygen: Doxyfile
+	doxygen Doxyfile
+
 build/console_log_demo: $(LOG_LIB) demos/console_log_demo.cpp
+	$(CXX) $^ -o $@
+
+build/file_log_demo: $(LOG_LIB) demos/file_log_demo.cpp
 	$(CXX) $^ -o $@
 
 build/perfTest: $(LOG_LIB) tests/Perf.cpp
