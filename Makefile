@@ -2,14 +2,14 @@ CXXFLAGS_WARN 			:= -Wall -Werror -Wpedantic
 CXXFLAGS_OPTIM 			:= -O3
 CXXFLAGS_INCLUDE_PATHS 	:= -Iinclude
 CXXFLAGS_VERSION		:= -std=c++23
-CXXFLAGS_SAN 			:= -fsanitize=address -g
+# CXXFLAGS_SAN 			:= -fsanitize=address -g
 CXXFLAGS := $(CXXFLAGS_WARN) $(CXXFLAGS_OPTIM) $(CXXFLAGS_INCLUDE_PATHS)\
 			$(CXXFLAGS_VERSION) $(CXXFLAGS_SAN)
 CXX := /usr/bin/clang++-18 $(CXXFLAGS)
 LOG_LIB := build/SpektralLogger.so
 
 all: $(LOG_LIB)
-demos: build/console_log_demo
+demos: build/console_log_demo build/file_log_demo
 tests: build/perfTest
 
 check:
