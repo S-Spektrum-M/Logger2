@@ -17,13 +17,10 @@ public:
 };
 
 auto main() -> int {
-  Spektral::Log::ConsoleLogger *cl =
-      &Spektral::Log::ConsoleLogger::get_inst(Spektral::Log::INFO);
-  for (int i = 0; i < 10; ++i) {
-    for (int ii = 0; ii < 50000; ++ii)
-      cl->insert({Spektral::Log::INFO,
-                 Spektral::Log::Source<std::string>::Make("main"),
-                 Spektral::Log::Message<int>::Make(std::move(ii))});
-  }
-  delete cl;
+  Spektral::Log::ConsoleLogger &cl =
+      Spektral::Log::ConsoleLogger::get_inst(Spektral::Log::INFO);
+  for (int ii = 0; ii <= 500000; ++ii)
+    cl.insert({Spektral::Log::INFO,
+                Spektral::Log::Source<std::string>::Make("main"),
+                Spektral::Log::Message<int>::Make(std::move(ii))});
 }

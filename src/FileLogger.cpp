@@ -6,8 +6,10 @@
 
 namespace Spektral::Log {
 
-FileLogger::FileLogger(std::string file_path)
+FileLogger::FileLogger(const std::string &file_path)
     : _sink(std::make_shared<std::ofstream>(file_path)), _can_continue(true) {
+  if (_sink->is_open())
+    throw std::runtime_error(std::format("Failed to open file: {}", file_path));
   _ref = start_backend(_can_continue);
 }
 

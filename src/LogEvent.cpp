@@ -7,20 +7,19 @@ Spektral::Log::LogEvent::LogEvent(LogLevel level,
                                   std::unique_ptr<ISource> source,
                                   std::unique_ptr<IMessage> message) {
   if (message == nullptr)
-    throw message_nullptr_excpetion();
+    throw message_nullptr_exception();
   if (source == nullptr)
-    throw source_nullptr_excpetion();
+    throw source_nullptr_exception();
   time = std_clock::now();
-  this->level = level;
+  this->level = std::move(level);
   this->source = std::move(source);
   this->message = std::move(message);
 }
 
 Spektral::Log::LogEvent::LogEvent(LogEvent &&l) {
-  if (l.message == nullptr)
-    throw message_nullptr_excpetion();
-  if (l.source == nullptr)
-    throw source_nullptr_excpetion();
+  if (l.message == nullptr) throw message_nullptr_exception();
+  if (l.source == nullptr) throw source_nullptr_exception();
+
   message = std::move(l.message);
   source = std::move(l.source);
   time = std::move(l.time);
