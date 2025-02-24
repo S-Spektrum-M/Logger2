@@ -21,7 +21,7 @@ public:
    * WARN.
    * @return A reference to the ConsoleLogger singleton instance.
    */
-  static ConsoleLogger &get_inst(LogLevel min_level = WARN);
+  static ConsoleLogger &get_inst(LogLevel min_level = LogLevel::WARN);
   /**
    * @brief Insert a log event into the logger's queue.
    *
@@ -60,6 +60,7 @@ private:
    *
    * @param min_level The minimum LogLevel to use. Default: WARN.
    */
+  using enum LogLevel;
   ConsoleLogger(LogLevel min_level = WARN);
   /// Queue of LogEvents intended for standard output
   log_t _stdout_log;

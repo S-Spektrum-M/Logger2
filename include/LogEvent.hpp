@@ -21,7 +21,7 @@ namespace Spektral::Log {
  * - ERROR: Error messages
  */
 
-enum LogLevel : char {
+enum class LogLevel : char {
   INFO = 0,  ///< Informational messages
   WARN = 1,  ///< Warning messages
   DEBUG = 2, ///< Debugging messages

@@ -18,9 +18,9 @@ public:
 
 auto main() -> int {
   Spektral::Log::ConsoleLogger &cl =
-      Spektral::Log::ConsoleLogger::get_inst(Spektral::Log::INFO);
+      Spektral::Log::ConsoleLogger::get_inst(Spektral::Log::LogLevel::INFO);
   for (int ii = 0; ii <= 500000; ++ii)
-    cl.insert({Spektral::Log::INFO,
+    cl.insert({Spektral::Log::LogLevel::INFO,
                 Spektral::Log::Source<std::string>::Make("main"),
                 Spektral::Log::Message<int>::Make(std::move(ii))});
 }

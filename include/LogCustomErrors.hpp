@@ -75,6 +75,7 @@ public:
    * describes the exception's error message based on the log level.
    */
   const char *what() const noexcept override {
+    using enum LogLevel;
     switch (error_level) {
     case INFO:
       return "Error pushing to INFO level\n";

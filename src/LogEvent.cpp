@@ -17,8 +17,10 @@ Spektral::Log::LogEvent::LogEvent(LogLevel level,
 }
 
 Spektral::Log::LogEvent::LogEvent(LogEvent &&l) {
-  if (l.message == nullptr) throw message_nullptr_exception();
-  if (l.source == nullptr) throw source_nullptr_exception();
+  if (l.message == nullptr)
+    throw message_nullptr_exception();
+  if (l.source == nullptr)
+    throw source_nullptr_exception();
 
   message = std::move(l.message);
   source = std::move(l.source);
@@ -28,6 +30,7 @@ Spektral::Log::LogEvent::LogEvent(LogEvent &&l) {
 
 Spektral::Log::LogEvent::operator std::string() {
   switch (level) {
+    using enum LogLevel;
   case INFO:
     return std::format("INFO: {} {} from {}\n", time,
                        message->operator std::string(),
