@@ -26,16 +26,17 @@ ConsoleLogger &ConsoleLogger::get_inst(LogLevel min_level) {
 }
 
 void ConsoleLogger::insert(LogEvent &&l) {
-  if (l.level < _min_level) return;
+  if (l.level < _min_level)
+    return;
   switch (l.level) {
   case INFO:
   case WARN:
   case DEBUG:
-    _stdout_log.emplace_back(std::make_shared<LogEvent>(std::move(l)));
+    _stdout_log.emplace_back(std::move(l));
     break;
   case ERROR:
   default:
-    _stderr_log.emplace_back(std::make_shared<LogEvent>(std::move(l)));
+    _stderr_log.emplace_back(std::move(l));
     break;
   }
 }
@@ -46,35 +47,23 @@ ConsoleLogger::start_backend(std::atomic<bool> &can_continue) {
     std::vector<log_t *> logs = {&_stdout_log, &_stderr_log};
     while (can_continue) {
       if (!_stdout_log.empty()) {
-        auto &front = _stdout_log.front();
-        if (front) {
-          std::cout << front->operator std::string();
-        }
-        _stdout_log.pop_front();
+        auto &front = _stdout_log.pop();
+        free(&front);
       }
       if (!_stderr_log.empty()) {
-        auto &front = _stderr_log.front();
-        if (front) {
-          std::cerr << front->operator std::string();
-        }
-        _stderr_log.pop_front();
+        auto &front = _stderr_log.pop();
+        free(&front);
       }
     }
 
     while (!_stdout_log.empty() || !_stderr_log.empty()) {
       if (!_stdout_log.empty()) {
-        auto &front = _stdout_log.front();
-        if (front) {
-          std::cout << front->operator std::string();
-        }
-        _stdout_log.pop_front();
+        auto &front = _stdout_log.pop();
+        free(&front);
       }
       if (!_stderr_log.empty()) {
-        auto &front = _stderr_log.front();
-        if (front) {
-          std::cerr << front->operator std::string();
-        }
-        _stderr_log.pop_front();
+        auto &front = _stderr_log.pop();
+        free(&front);
       }
     }
   });

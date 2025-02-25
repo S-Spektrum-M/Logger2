@@ -3,7 +3,7 @@ CXXFLAGS_WARN 			:= -Wall -Werror -Wpedantic
 CXXFLAGS_OPTIM 			:= -O3
 CXXFLAGS_INCLUDE_PATHS 	:= -Iinclude
 CXXFLAGS_VERSION		:= -std=c++23
-# CXXFLAGS_SAN 			:= -fsanitize=address -g
+# CXXFLAGS_SAN 			:= -fsanitize=thread -g
 CXXFLAGS := $(CXXFLAGS_WARN) $(CXXFLAGS_OPTIM) $(CXXFLAGS_INCLUDE_PATHS)\
 			$(CXXFLAGS_VERSION) $(CXXFLAGS_SAN)
 CXX := /usr/bin/clang++-18 $(CXXFLAGS)
@@ -30,8 +30,11 @@ build/perfTest: $(LOG_LIB) tests/Perf.cpp
 	$(CXX) $^ -o $@ -lbenchmark
 
 $(LOG_LIB): build/BinaryLogger.o build/FileLogger.o build/ConsoleLogger.o\
-	build/LogEvent.o
+	build/LogEvent.o build/LogQueue.o
 	$(CXX) -shared -fPIC $^ -o $@
+
+build/LogQueue.o: src/LogQueue.cpp include/LogQueue.hpp
+	$(CXX) -c -fPIC $< -o $@
 
 build/BinaryLogger.o: src/BinaryLogger.cpp include/BinaryLogger.hpp
 	$(CXX) -c -fPIC $< -o $@

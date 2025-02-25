@@ -1,6 +1,7 @@
 /// @file ConsoleLogger.hpp
 
 #pragma once
+#include "LogQueue.hpp"
 #include "LogEvent.hpp"
 #include <atomic>
 #include <deque>
@@ -43,7 +44,7 @@ public:
 private:
   /// Type alias for a deque of shared pointers to LogEvents to make
   /// implementations easier
-  using log_t = std::deque<std::shared_ptr<LogEvent>>;
+  using log_t = LogQueue;
 
   /**
    * @brief Singleton instance pointer.
