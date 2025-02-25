@@ -1,3 +1,4 @@
+MAKEFLAGS=-j 32
 CXXFLAGS_WARN 			:= -Wall -Werror -Wpedantic
 CXXFLAGS_OPTIM 			:= -O3
 CXXFLAGS_INCLUDE_PATHS 	:= -Iinclude
@@ -16,7 +17,7 @@ check:
 	cppcheck -Iinclude/ --enable=all --suppress=missingIncludeSystem \
 		--suppress=checkersReport src tests
 
-doxygen: Doxyfile
+docs: Doxyfile
 	doxygen Doxyfile
 
 build/console_log_demo: $(LOG_LIB) demos/console_log_demo.cpp
