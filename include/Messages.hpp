@@ -1,4 +1,6 @@
 /// @file: include/Messages.hpp
+/// @author: Siddharth Mohanty
+/// @namespace: Spektral::Log
 ///
 /// 1. defines the StrConv<T> concept, which checks to make sure that a type
 /// defines a string conversion operator.
@@ -52,9 +54,8 @@ public:
    * @param args A parameter pack that will be expanded and converted into type
    * T.
    */
-  template <typename... Args> Message(Args... args) {
-    val = std::make_unique<T>(args...);
-  }
+  template <typename... Args>
+  Message(Args... args) : val(std::make_unique<T>(args...)) {}
 
   operator std::string() override { return val->operator std::string(); }
   /**
@@ -102,19 +103,21 @@ private:
 
 public:
   /**
-   * @brief A copy constructor for use EXCLUSIVELY by Message<std::string>::Make;
+   * @brief A copy constructor for use EXCLUSIVELY by
+   * Message<std::string>::Make;
    *
    * @param str const std::string & The value to copy from.
    * T.
    */
-  Message(const std::string &str) { val = std::make_unique<std::string>(str); }
+  explicit Message(const std::string &str) : val(std::make_unique<std::string>(str)) {}
   /**
-   * @brief A move constructor for use EXCLUSIVELY by Message<std::string>::Make;
+   * @brief A move constructor for use EXCLUSIVELY by
+   * Message<std::string>::Make;
    *
    * @param str const std::string The value to move from.
    * T.
    */
-  Message(std::string &&str) { val = std::make_unique<std::string>(str); }
+  explicit Message(std::string &&str) : val(std::make_unique<std::string>(str)) {}
   operator std::string() override { return *val; }
   static std::unique_ptr<Message> Make(std::string &&value) {
     return std::make_unique<Message>(std::move(value));
@@ -126,7 +129,7 @@ template <> class Message<int> : public Spektral::Log::IMessage {
 
 public:
   operator std::string() override { return std::to_string(val); }
-  Message(int v) { val = v; }
+  explicit Message(int v) { val = v; }
   static std::unique_ptr<Message> Make(int v) {
     return std::make_unique<Message>(v);
   }

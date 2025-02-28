@@ -3,7 +3,7 @@ CXXFLAGS_WARN 			:= -Wall -Werror -Wpedantic
 CXXFLAGS_OPTIM 			:= -O3
 CXXFLAGS_INCLUDE_PATHS 	:= -Iinclude
 CXXFLAGS_VERSION		:= -std=c++23
-# CXXFLAGS_SAN 			:= -fsanitize=thread -g
+CXXFLAGS_SAN 			:= -fsanitize=address -g
 CXXFLAGS := $(CXXFLAGS_WARN) $(CXXFLAGS_OPTIM) $(CXXFLAGS_INCLUDE_PATHS)\
 			$(CXXFLAGS_VERSION) $(CXXFLAGS_SAN)
 CXX := /usr/bin/clang++-18 $(CXXFLAGS)
@@ -15,7 +15,7 @@ tests: build/perfTest
 
 check:
 	cppcheck -Iinclude/ --enable=all --suppress=missingIncludeSystem \
-		--suppress=checkersReport src tests
+		--suppress=checkersReport --suppress=constParameterCallback --suppress=unusedFunction src tests
 
 docs: Doxyfile
 	doxygen Doxyfile

@@ -1,10 +1,11 @@
-/// @file ConsoleLogger.hpp
+/**
+ * @file ConsoleLogger.hpp
+ * @author Siddharth Mohanty
+ * @namespace Spektral::Log
+ */
 
 #pragma once
 #include "LogQueue.hpp"
-#include "LogEvent.hpp"
-#include <atomic>
-#include <deque>
 #include <future>
 
 namespace Spektral::Log {
@@ -62,7 +63,7 @@ private:
    * @param min_level The minimum LogLevel to use. Default: WARN.
    */
   using enum LogLevel;
-  ConsoleLogger(LogLevel min_level = WARN);
+  explicit ConsoleLogger(LogLevel min_level = WARN);
   /// Queue of LogEvents intended for standard output
   log_t _stdout_log;
   /// Queue of LogEvents intended for standard error

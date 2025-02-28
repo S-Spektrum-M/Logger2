@@ -1,5 +1,4 @@
 #include "ConsoleLogger.hpp"
-#include "LogCustomErrors.hpp"
 #include <cmath>
 #include <iostream>
 #define LOG_MAX_SZ 100000000
@@ -47,23 +46,27 @@ ConsoleLogger::start_backend(std::atomic<bool> &can_continue) {
     std::vector<log_t *> logs = {&_stdout_log, &_stderr_log};
     while (can_continue) {
       if (!_stdout_log.empty()) {
-        auto &front = _stdout_log.pop();
-        free(&front);
+        std::shared_ptr<LogEvent> &&front = _stdout_log.pop();
+        std::cout << (std::string)(*front);
+        void(std::async(std::launch::async, [&] { delete &front; }));
       }
       if (!_stderr_log.empty()) {
-        auto &front = _stderr_log.pop();
-        free(&front);
+        auto &&front = _stderr_log.pop();
+        std::cerr << (std::string)(*front);
+        void(std::async(std::launch::async, [&] { delete &front; }));
       }
     }
 
     while (!_stdout_log.empty() || !_stderr_log.empty()) {
       if (!_stdout_log.empty()) {
-        auto &front = _stdout_log.pop();
-        free(&front);
+        std::shared_ptr<LogEvent> &&front = _stdout_log.pop();
+        std::cout << (std::string)(*front);
+        void(std::async(std::launch::async, [&] { delete &front; }));
       }
       if (!_stderr_log.empty()) {
-        auto &front = _stderr_log.pop();
-        free(&front);
+        auto &&front = _stderr_log.pop();
+        std::cerr << (std::string)(*front);
+        void(std::async(std::launch::async, [&] { delete &front; }));
       }
     }
   });

@@ -4,8 +4,8 @@
 #include <iostream>
 
 Spektral::Log::LogEvent::LogEvent(LogLevel level,
-                                  std::unique_ptr<ISource> source,
-                                  std::unique_ptr<IMessage> message) {
+                                  std::shared_ptr<ISource> source,
+                                  std::shared_ptr<IMessage> message) {
   if (message == nullptr)
     throw message_nullptr_exception();
   if (source == nullptr)
@@ -51,4 +51,12 @@ Spektral::Log::LogEvent::operator std::string() {
   return std::format("UNKOWN_LEVEL: {} {} {}\n", time,
                      message->operator std::string(),
                      source->operator std::string());
+}
+
+auto Spektral::Log::LogEvent::operator=(const LogEvent &copy) -> LogEvent & {
+    this->level = copy.level;
+    this->time = copy.time;
+    this->message = std::shared_ptr<IMessage>(copy.message.get());
+    this->source = std::shared_ptr<ISource>(copy.source.get());
+    return *this;
 }

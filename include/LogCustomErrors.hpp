@@ -1,15 +1,10 @@
-#pragma once
-#include "LogEvent.hpp"
-#include <exception>
-
 /**
  * @file LogExceptions.hpp
+ * @author Siddharth Mohanty
  * @namespace Spektral::Log
- * @brief Exception classes for log event handling.
  */
 
 #pragma once
-
 #include "LogEvent.hpp"
 #include <exception>
 

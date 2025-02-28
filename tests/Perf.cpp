@@ -23,14 +23,13 @@ void BM_MakeMessage(benchmark::State &state) {
 
 void BM_Console(benchmark::State &state) {
   Spektral::Log::ConsoleLogger &cl =
-      Spektral::Log::ConsoleLogger::get_inst(Spektral::Log::INFO);
-  Spektral::Log::FileLogger logger("output_logs/demo.log");
+      Spektral::Log::ConsoleLogger::get_inst(Spektral::Log::LogLevel::INFO);
   for (const auto &_ : state) {
     try {
-      cl.insert({Spektral::Log::INFO,
+      cl.insert({Spektral::Log::LogLevel::INFO,
                      Spektral::Log::Source<std::string>::Make("main"),
                      Spektral::Log::Message<std::string>::Make("Hi")});
-    } catch (Spektral::Log::full_queue_exception &e) {
+    } catch (const Spektral::Log::full_queue_exception &e) {
       return;
     }
   }
@@ -40,10 +39,10 @@ static Spektral::Log::FileLogger logger("output_logs/demo.log");
 void BM_File(benchmark::State &state) {
   for (const auto &_ : state) {
     try {
-      logger.insert({Spektral::Log::INFO,
+      logger.insert({Spektral::Log::LogLevel::INFO,
                      Spektral::Log::Source<std::string>::Make("main"),
                      Spektral::Log::Message<std::string>::Make("Hi")});
-    } catch (Spektral::Log::full_queue_exception &e) {
+    } catch (const Spektral::Log::full_queue_exception &e) {
       return;
     }
   }
@@ -52,5 +51,5 @@ void BM_File(benchmark::State &state) {
 BENCHMARK(BM_MakeSrc);
 BENCHMARK(BM_MakeMessage);
 BENCHMARK(BM_Console);
-BENCHMARK(BM_File)->Iterations(100000);
+BENCHMARK(BM_File);
 BENCHMARK_MAIN();

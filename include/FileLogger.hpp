@@ -1,26 +1,30 @@
+/**
+ * @file FileLogger.hpp
+ * @author Siddharth Mohanty
+ * @namespace Spektral::Log
+ */
+
 #pragma once
-#include "LogEvent.hpp"
-#include <deque>
+#include "LogQueue.hpp"
 #include <fstream>
 #include <future>
-#include <atomic>
-#include <memory>
 
 namespace Spektral::Log {
 
 /**
  * @brief A class for logging events to a file.
  *
- * This class provides a mechanism to efficiently log events to a file.  It uses a queue
- * to buffer log events and a background thread to write them to the file, improving
- * performance by minimizing blocking operations in the main thread.
+ * This class provides a mechanism to efficiently log events to a file.  It uses
+ * a queue to buffer log events and a background thread to write them to the
+ * file, improving performance by minimizing blocking operations in the main
+ * thread.
  */
 class FileLogger {
 public:
   /**
    * @brief Type alias for the log queue.
    */
-  using log_t = std::deque<std::shared_ptr<LogEvent>>;
+  using log_t = LogQueue;
 
   /**
    * @brief Constructor that takes a file path to which logs will be written.
@@ -44,8 +48,8 @@ public:
    * @brief Destructor.
    *
    * The destructor ensures that all pending log events are written to the file
-   * before the logger is destroyed. It signals the background thread to stop and
-   * waits for it to finish processing the queue.
+   * before the logger is destroyed. It signals the background thread to stop
+   * and waits for it to finish processing the queue.
    */
   ~FileLogger();
 
@@ -57,7 +61,8 @@ public:
    *
    * This function adds the provided LogEvent to the internal queue. The actual
    * writing to the file is handled by a background thread.  This allows the
-   * application to continue execution without waiting for the file I/O to complete.
+   * application to continue execution without waiting for the file I/O to
+   * complete.
    *
    * @note The inserted event is moved, i.e., it is no longer accessible in
    * its original location after this function call.

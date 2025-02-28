@@ -1,6 +1,7 @@
 /**
- * @file log.hpp
- * @brief Logging system interfaces and structures.
+ * @file LogEvent.hpp
+ * @namespace Spektral::Log
+ * @author Siddharth Mohanty
  */
 
 #pragma once
@@ -94,8 +95,8 @@ public:
 struct LogEvent {
   LogLevel level;                    ///< Severity level of the log event.
   std_time_t time;                   ///< Timestamp of the log event.
-  std::unique_ptr<ISource> source;   ///< Source of the log event.
-  std::unique_ptr<IMessage> message; ///< Message of the log event.
+  std::shared_ptr<ISource> source;   ///< Source of the log event.              FIXME: this will have to become a shared_ptr
+  std::shared_ptr<IMessage> message; ///< Message of the log event.             FIXME: this will have to become a shared_ptr
 
   /**
    * @brief Constructs a LogEvent.
@@ -105,8 +106,8 @@ struct LogEvent {
    * @param message Pointer to the message of the event. Ownership is
    * transferred.
    */
-  LogEvent(LogLevel level, std::unique_ptr<ISource> source,
-           std::unique_ptr<IMessage> message);
+  LogEvent(LogLevel level, std::shared_ptr<ISource> source,
+           std::shared_ptr<IMessage> message);
 
   /**
    * @brief Move constructor.
@@ -124,13 +125,15 @@ struct LogEvent {
    * owned objects when the `LogEvent` is destroyed.  No manual `delete` calls
    * are necessary.
    */
-  ~LogEvent() = default; // No user-defined logic needed thanks to unique_ptr
+  ~LogEvent() = default; // No user-defined logic needed thanks to shared_ptr
 
   /**
    * @brief Converts the log event to a string representation.
    * @return String representation of the log event.
    */
   operator std::string();
+
+  LogEvent &operator=(const LogEvent &copy);
 };
 
 } // namespace Spektral::Log

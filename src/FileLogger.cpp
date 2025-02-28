@@ -21,27 +21,23 @@ FileLogger::~FileLogger() {
 }
 
 void FileLogger::insert(LogEvent &&event) {
-  _log_queue.emplace_back(std::make_shared<LogEvent>(std::move(event)));
+  _log_queue.emplace_back(std::move(event));
 }
 
 std::future<void> FileLogger::start_backend(std::atomic<bool> &can_continue) {
   return std::async(std::launch::async, [this, &can_continue]() -> void {
     while (can_continue) {
       if (!_log_queue.empty()) {
-        auto &front = _log_queue.front();
-        if (front) {
-          (*_sink) << front->operator std::string() << std::flush;
-        }
-        _log_queue.pop_front();
+        auto &front = _log_queue.pop();
+        (*_sink) << (std::string)front;
+        void(std::async(std::launch::async, [&] { delete &front; }));
       }
     }
 
     while (!_log_queue.empty()) {
-      auto &front = _log_queue.front();
-      if (front) {
-        (*_sink) << front->operator std::string() << std::flush;
-      }
-      _log_queue.pop_front();
+      auto &front = _log_queue.pop();
+      (*_sink) << (std::string)front;
+      void(std::async(std::launch::async, [&] { delete &front; }));
     }
   });
 }

@@ -1,5 +1,9 @@
-/// @file: include/FrontEnd.hpp
-/// @brief: This file provides an API for Spektral::Log.
+/**
+ * @file: include/FrontEnd.hpp
+ * @author: Siddharth Mohanty
+ * @namespace: Spektral::Log
+ */
+
 #pragma once
 static_assert(__cplusplus >= 202002L,
               "Spektral::Log requires C++20 at minimum");

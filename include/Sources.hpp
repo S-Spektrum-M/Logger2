@@ -1,5 +1,5 @@
 /// @file: include/Sources.hpp
-/// @brief: provides implemntations for the ISource Interface
+/// @namespace: Spektral::Log
 ///
 /// 1. defines the StrConv<T> concept, which checks to make sure that a type
 /// defines a string conversion operator.
@@ -68,9 +68,8 @@ public:
    * @param args A parameter pack that will be expanded and converted into type
    * T.
    */
-  template <typename... Args> Source(Args... args) {
-    val = std::make_unique<T>(args...);
-  }
+  template <typename... Args>
+  Source(Args... args) : val(std::make_unique<T>(args...)) {}
 
   /**
    * @brief Convert the encapsulated value to a string when logging.
@@ -115,14 +114,14 @@ public:
    * @param str const std::string & The value to copy from.
    * T.
    */
-  Source(const std::string &str) { val = std::make_unique<std::string>(str); }
+  explicit Source(const std::string &str) : val(std::make_unique<std::string>(str)) {}
   /**
    * @brief A move constructor for use EXCLUSIVELY by Source<std::string>::Make;
    *
    * @param str const std::string The value to move from.
    * T.
    */
-  Source(std::string &&str) { val = std::make_unique<std::string>(str); }
+  explicit Source(std::string &&str) : val(std::make_unique<std::string>(str)) {}
   /**
    * @brief Convert the encapsulated value to a string when logging.
    */
